@@ -309,26 +309,6 @@ namespace FreeSql
                         if (type == null) throwNotFind("FreeSql.Provider.GBase.dll", "FreeSql.GBase.GBaseProvider<>");
                         break;
 
-                    case DataType.CustomOracle:
-                        type = Type.GetType("FreeSql.Custom.Oracle.CustomOracleProvider`1,FreeSql.Provider.Custom")?.MakeGenericType(typeof(TMark));
-                        if (type == null) throwNotFind("FreeSql.Provider.Custom.dll", "FreeSql.Custom.Oracle.CustomOracleProvider<>");
-                        break;
-
-                    case DataType.CustomSqlServer:
-                        type = Type.GetType("FreeSql.Custom.SqlServer.CustomSqlServerProvider`1,FreeSql.Provider.Custom")?.MakeGenericType(typeof(TMark));
-                        if (type == null) throwNotFind("FreeSql.Provider.Custom.dll", "FreeSql.Custom.SqlServer.CustomSqlServerProvider<>");
-                        break;
-
-                    case DataType.CustomMySql:
-                        type = Type.GetType("FreeSql.Custom.MySql.CustomMySqlProvider`1,FreeSql.Provider.Custom")?.MakeGenericType(typeof(TMark));
-                        if (type == null) throwNotFind("FreeSql.Provider.Custom.dll", "FreeSql.Custom.MySql.CustomMySqlProvider<>");
-                        break;
-
-                    case DataType.CustomPostgreSQL:
-                        type = Type.GetType("FreeSql.Custom.PostgreSQL.CustomPostgreSQLProvider`1,FreeSql.Provider.Custom")?.MakeGenericType(typeof(TMark));
-                        if (type == null) throwNotFind("FreeSql.Provider.Custom.dll", "FreeSql.Custom.PostgreSQL.CustomPostgreSQLProvider<>");
-                        break;
-
                     default: throw new Exception(CoreStrings.NotSpecified_UseConnectionString_UseConnectionFactory);
                 }
             }
@@ -356,36 +336,36 @@ namespace FreeSql
                 //添加实体属性名全局AOP转换处理
                 if (_nameConvertType != NameConvertType.None)
                 {
-                    string PascalCaseToUnderScore(string str) => string.IsNullOrWhiteSpace(str) ? str : string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
-                    //string UnderScorePascalCase(string str) => string.IsNullOrWhiteSpace(str) ? str : string.Join("", str.Split('_').Select(a => a.Length > 0 ? string.Concat(char.ToUpper(a[0]), a.Substring(1)) : ""));
+                    string PascalCaseToUnderScore(string str) => string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
+                    //string UnderScorePascalCase(string str) => string.Join("", str.Split('_').Select(a => a.Length > 0 ? string.Concat(char.ToUpper(a[0]), a.Substring(1)) : ""));
 
                     switch (_nameConvertType)
                     {
                         case NameConvertType.ToLower:
-                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = e.ModifyResult.Name?.ToLower();
-                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = e.ModifyResult.Name?.ToLower();
+                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = e.EntityType.Name.ToLower();
+                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = e.Property.Name.ToLower();
                             ret.CodeFirst.IsSyncStructureToLower = true;
                             break;
                         case NameConvertType.ToUpper:
-                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = e.ModifyResult.Name?.ToUpper();
-                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = e.ModifyResult.Name?.ToUpper();
+                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = e.EntityType.Name.ToUpper();
+                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = e.Property.Name.ToUpper();
                             ret.CodeFirst.IsSyncStructureToUpper = true;
                             break;
                         case NameConvertType.PascalCaseToUnderscore:
-                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name);
-                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name);
+                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.EntityType.Name);
+                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.Property.Name);
                             break;
                         case NameConvertType.PascalCaseToUnderscoreWithLower:
-                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name)?.ToLower();
-                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name)?.ToLower();
+                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.EntityType.Name).ToLower();
+                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.Property.Name).ToLower();
                             break;
                         case NameConvertType.PascalCaseToUnderscoreWithUpper:
-                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name)?.ToUpper();
-                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.ModifyResult.Name)?.ToUpper();
+                            ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.EntityType.Name).ToUpper();
+                            ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = PascalCaseToUnderScore(e.Property.Name).ToUpper();
                             break;
                         //case NameConvertType.UnderscoreToPascalCase:
-                        //    ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = UnderScorePascalCase(e.ModifyResult.Name);
-                        //    ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = UnderScorePascalCase(e.ModifyResult.Name);
+                        //    ret.Aop.ConfigEntity += (_, e) => e.ModifyResult.Name = UnderScorePascalCase(e.EntityType.Name);
+                        //    ret.Aop.ConfigEntityProperty += (_, e) => e.ModifyResult.Name = UnderScorePascalCase(e.Property.Name);
                         //    break;
                         default:
                             break;
@@ -508,7 +488,7 @@ namespace FreeSql
                         else if (string.IsNullOrEmpty(name) == false)
                             e.ModifyResult.Name = name;
                         else if (string.IsNullOrEmpty(schema) == false)
-                            e.ModifyResult.Name = $"{schema}.{e.ModifyResult.Name}";
+                            e.ModifyResult.Name = $"{schema}.{e.EntityType.Name}";
                     }
                 });
 

@@ -17,7 +17,7 @@
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
 		<DelaySign>false</DelaySign>
-		<Version>3.2.670-preview22020920</Version>
+		<Version>3.2.666</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -27,9 +27,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\FreeSql.DbContext\FreeSql.DbContext.csproj" />
 	</ItemGroup>
-	
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net40'">
-		<DefineConstants>net40</DefineConstants>
-	</PropertyGroup>
-	
+
 </Project>

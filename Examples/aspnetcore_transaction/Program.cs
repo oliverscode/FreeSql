@@ -16,6 +16,7 @@ namespace aspnetcore_transaction
                 {
                     webBuilder.UseStartup<Startup>();
                 })
+                //.UseServiceProviderFactory(new FreeSql.DynamicProxyServiceProviderFactory())
             ;
     }
 }

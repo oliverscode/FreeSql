@@ -116,15 +116,6 @@ namespace FreeSql.Internal.ObjectPool
                         
                         try
                         {
-                            try
-                            {
-                                Policy.OnCheckAvailable(conn);
-                                break;
-                            }
-                            catch
-                            {
-                                conn.ResetValue();
-                            }
                             if (Policy.OnCheckAvailable(conn) == false) throw new Exception(CoreStrings.Available_Thrown_Exception("CheckAvailable"));
                             break;
                         }

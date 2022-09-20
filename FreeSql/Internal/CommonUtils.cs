@@ -113,7 +113,6 @@ namespace FreeSql.Internal
         }
 
         public MappingPriorityType[] _mappingPriorityTypes = new[] { MappingPriorityType.Aop, MappingPriorityType.FluentApi, MappingPriorityType.Attribute };
-        ConcurrentDictionary<Type, Dictionary<string, IndexAttribute>> dicAopConfigEntityIndex = new ConcurrentDictionary<Type, Dictionary<string, IndexAttribute>>();
         public TableAttribute GetEntityTableAttribute(Type type)
         {
             var attr = new TableAttribute();
@@ -124,31 +123,13 @@ namespace FreeSql.Internal
                     case MappingPriorityType.Aop:
                         if (_orm.Aop.ConfigEntityHandler != null)
                         {
-                            var aope = new Aop.ConfigEntityEventArgs(type)
-                            {
-                                ModifyResult = new TableAttribute
-                                {
-                                    Name = attr.Name,
-                                    OldName = attr.OldName,
-                                    _DisableSyncStructure = attr._DisableSyncStructure,
-                                    AsTable = attr.AsTable
-                                }
-                            };
-                            _orm.Aop.ConfigEntityHandler(_orm, aope); 
+                            var aope = new Aop.ConfigEntityEventArgs(type);
+                            _orm.Aop.ConfigEntityHandler(_orm, aope);
                             var tryattr = aope.ModifyResult;
                             if (!string.IsNullOrEmpty(tryattr.Name)) attr.Name = tryattr.Name;
                             if (!string.IsNullOrEmpty(tryattr.OldName)) attr.OldName = tryattr.OldName;
                             if (tryattr._DisableSyncStructure != null) attr._DisableSyncStructure = tryattr.DisableSyncStructure;
                             if (!string.IsNullOrEmpty(tryattr.AsTable)) attr.AsTable = tryattr.AsTable;
-
-                            var indexs = new Dictionary<string, IndexAttribute>();
-                            foreach (var idxattr in aope.ModifyIndexResult)
-                                if (!string.IsNullOrEmpty(idxattr.Name) && !string.IsNullOrEmpty(idxattr.Fields))
-                                {
-                                    if (indexs.ContainsKey(idxattr.Name)) indexs.Remove(idxattr.Name);
-                                    indexs.Add(idxattr.Name, new IndexAttribute(idxattr.Name, idxattr.Fields) { _IsUnique = idxattr._IsUnique });
-                                }
-                            dicAopConfigEntityIndex.AddOrUpdate(type, indexs, (_, old) => indexs);
                         }
                         break;
                     case MappingPriorityType.FluentApi:
@@ -190,31 +171,7 @@ namespace FreeSql.Internal
                     case MappingPriorityType.Aop:
                         if (_orm.Aop.ConfigEntityPropertyHandler != null)
                         {
-                            var aope = new Aop.ConfigEntityPropertyEventArgs(type, proto)
-                            {
-                                ModifyResult = new ColumnAttribute
-                                {
-                                    Name = attr.Name,
-                                    OldName = attr.OldName,
-                                    DbType = attr.DbType,
-                                    _IsPrimary = attr._IsPrimary,
-                                    _IsIdentity = attr._IsIdentity,
-                                    _IsNullable = attr._IsNullable,
-                                    _IsIgnore = attr._IsIgnore,
-                                    _IsVersion = attr._IsVersion,
-                                    MapType = attr.MapType,
-                                    _Position = attr._Position,
-                                    _CanInsert = attr._CanInsert,
-                                    _CanUpdate = attr._CanUpdate,
-                                    ServerTime = attr.ServerTime,
-                                    _StringLength = attr._StringLength,
-                                    InsertValueSql = attr.InsertValueSql,
-                                    _Precision = attr._Precision,
-                                    _Scale = attr._Scale,
-                                    RewriteSql = attr.RewriteSql,
-                                    RereadSql = attr.RereadSql
-                                }
-                            };
+                            var aope = new Aop.ConfigEntityPropertyEventArgs(type, proto);
                             _orm.Aop.ConfigEntityPropertyHandler(_orm, aope);
                             var tryattr = aope.ModifyResult;
                             if (!string.IsNullOrEmpty(tryattr.Name)) attr.Name = tryattr.Name;
@@ -367,9 +324,11 @@ namespace FreeSql.Internal
                 switch (mp)
                 {
                     case MappingPriorityType.Aop:
-                        if (dicAopConfigEntityIndex.TryGetValue(type, out var tryidxs))
+                        if (_orm.Aop.ConfigEntityHandler != null)
                         {
-                            foreach (var idxattr in tryidxs.Values)
+                            var aope = new Aop.ConfigEntityEventArgs(type);
+                            _orm.Aop.ConfigEntityHandler(_orm, aope);
+                            foreach (var idxattr in aope.ModifyIndexResult)
                                 if (!string.IsNullOrEmpty(idxattr.Name) && !string.IsNullOrEmpty(idxattr.Fields))
                                 {
                                     if (ret.ContainsKey(idxattr.Name)) ret.Remove(idxattr.Name);

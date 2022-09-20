@@ -436,7 +436,7 @@ namespace FreeSql
                 if (cuig.Length == _table.Columns.Count)
                     return ups.Length == data.Count ? -998 : -997;
 
-                var update = this.OrmUpdate(data.Select(a => a.Value)).IgnoreColumns(cuig);
+                var update = this.OrmUpdate(null).SetSource(data.Select(a => a.Value)).IgnoreColumns(cuig);
                 var affrows = update.ExecuteAffrows();
                 _db._entityChangeReport.AddRange(data.Select(a => new DbContext.EntityChangeReport.ChangeInfo
                 {
@@ -715,8 +715,8 @@ namespace FreeSql
 
             List<NativeTuple<TableRef, PropertyInfo>> LocalGetNavigates(TableInfo tb)
             {
-                return tb.GetAllTableRef().Where(a => tb.ColumnsByCs.ContainsKey(a.Key) == false && a.Value.Exception == null)
-                    .Select(a => new NativeTuple<TableRef, PropertyInfo>(a.Value, tb.Properties[a.Key]))
+                return tb.Properties.Where(a => tb.ColumnsByCs.ContainsKey(a.Key) == false)
+                    .Select(a => new NativeTuple<TableRef, PropertyInfo>(tb.GetTableRef(a.Key, false), a.Value))
                     .Where(a => a.Item1 != null && new[] { TableRefType.OneToOne, TableRefType.OneToMany, TableRefType.ManyToMany }.Contains(a.Item1.RefType))
                     .ToList();
             }

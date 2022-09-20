@@ -11,11 +11,8 @@ namespace FreeSql.ClickHouse.Curd
 
     class ClickHouseSelect<T1> : FreeSql.Internal.CommonProvider.Select1Provider<T1>
     {
-        public string _limitBy = "";
-        public string _sample = "";
 
-        internal static string ToSqlStatic(CommonUtils _commonUtils, CommonExpression _commonExpression, string _select, bool _distinct, string field, StringBuilder _join, StringBuilder _where, string _groupby, string _having, string _orderby, int _skip, int _limit, List<SelectTableInfo> _tables, List<Dictionary<Type, string>> tbUnions, Func<Type, string, string> _aliasRule, string _tosqlAppendContent, List<GlobalFilter.Item> _whereGlobalFilter, IFreeSql _orm,
-            string _limitBy = "", string _sample = "")
+        internal static string ToSqlStatic(CommonUtils _commonUtils, CommonExpression _commonExpression, string _select, bool _distinct, string field, StringBuilder _join, StringBuilder _where, string _groupby, string _having, string _orderby, int _skip, int _limit, List<SelectTableInfo> _tables, List<Dictionary<Type, string>> tbUnions, Func<Type, string, string> _aliasRule, string _tosqlAppendContent, List<GlobalFilter.Item> _whereGlobalFilter, IFreeSql _orm)
         {
             if (_orm.CodeFirst.IsAutoSyncStructure)
                 _orm.CodeFirst.SyncStructure(_tables.Select(a => a.Table.Type).ToArray());
@@ -70,8 +67,6 @@ namespace FreeSql.ClickHouse.Curd
                     }
                     if (a < tbsfrom.Length - 1) sb.Append(", ");
                 }
-                if (string.IsNullOrEmpty(_sample) == false)
-                    sb.Append(" \r\n").Append(_sample);
                 foreach (var tb in tbsjoin)
                 {
                     switch (tb.Type)
@@ -110,10 +105,8 @@ namespace FreeSql.ClickHouse.Curd
                         sb.Append(" \r\nHAVING ").Append(_having.Substring(5));
                 }
                 sb.Append(_orderby);
-                if (string.IsNullOrEmpty(_limitBy) == false) 
-                    sb.Append(" \r\n").Append(_limitBy);
                 if (_skip > 0 || _limit > 0)
-                    sb.Append(" \r\nLIMIT ").Append(Math.Max(0, _skip)).Append(",").Append(_limit > 0 ? _limit : -1);
+                    sb.Append(" \r\nlimit ").Append(Math.Max(0, _skip)).Append(",").Append(_limit > 0 ? _limit : -1);
 
                 sbnav.Clear();
                 if (tbUnionsGt0) sb.Append(") ftb");
@@ -138,7 +131,7 @@ namespace FreeSql.ClickHouse.Curd
         public override ISelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> From<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Expression<Func<ISelectFromExpression<T1>, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, ISelectFromExpression<T1>>> exp) { this.InternalFrom(exp); var ret = new ClickHouseSelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(_orm, _commonUtils, _commonExpression, null); ClickHouseSelect<T1>.CopyData(this, ret, exp?.Parameters); return ret; }
         public override ISelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> From<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Expression<Func<ISelectFromExpression<T1>, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, ISelectFromExpression<T1>>> exp) { this.InternalFrom(exp); var ret = new ClickHouseSelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(_orm, _commonUtils, _commonExpression, null); ClickHouseSelect<T1>.CopyData(this, ret, exp?.Parameters); return ret; }
         public override ISelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> From<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Expression<Func<ISelectFromExpression<T1>, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, ISelectFromExpression<T1>>> exp) { this.InternalFrom(exp); var ret = new ClickHouseSelect<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(_orm, _commonUtils, _commonExpression, null); ClickHouseSelect<T1>.CopyData(this, ret, exp?.Parameters); return ret; }
-        public override string ToSql(string field = null) => ToSqlStatic(_commonUtils, _commonExpression, _select, _distinct, field ?? this.GetAllFieldExpressionTreeLevel2().Field, _join, _where, _groupby, _having, _orderby, _skip, _limit, _tables, this.GetTableRuleUnions(), _aliasRule, _tosqlAppendContent, _whereGlobalFilter, _orm, _limitBy);
+        public override string ToSql(string field = null) => ToSqlStatic(_commonUtils, _commonExpression, _select, _distinct, field ?? this.GetAllFieldExpressionTreeLevel2().Field, _join, _where, _groupby, _having, _orderby, _skip, _limit, _tables, this.GetTableRuleUnions(), _aliasRule, _tosqlAppendContent, _whereGlobalFilter, _orm);
     }
     class ClickHouseSelect<T1, T2> : FreeSql.Internal.CommonProvider.Select2Provider<T1, T2> where T2 : class
     {

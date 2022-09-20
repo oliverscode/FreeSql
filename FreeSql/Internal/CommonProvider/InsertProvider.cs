@@ -147,6 +147,7 @@ namespace FreeSql.Internal.CommonProvider
                 UpdateProvider<T1>.GetDictionaryTableInfo(source, _orm, ref _table);
                 AuditDataValue(this, source, _orm, _table, _auditValueChangedDict);
                 _source.AddRange(source);
+
             }
             return this;
         }

@@ -446,16 +446,10 @@ namespace FreeSql.Internal.CommonProvider
                             if (tbiindex > 0 && colidx == 0) field.Append("\r\n");
                         }
                         var quoteName = _commonUtils.QuoteSqlName(col.Attribute.Name);
-                        var columnSql = $"{tbi.Alias}.{quoteName}";
-                        var rereadSql = _commonUtils.RereadColumn(col, columnSql);
-                        field.Append(rereadSql);
+                        field.Append(_commonUtils.RereadColumn(col, $"{tbi.Alias}.{quoteName}"));
                         ++index;
                         if (dicfield.ContainsKey(quoteName)) field.Append(_commonUtils.FieldAsAlias($"as{index}"));
-                        else
-                        {
-                            dicfield.Add(quoteName, true);
-                            if (rereadSql != columnSql) field.Append(_commonUtils.FieldAsAlias(quoteName));
-                        }
+                        else dicfield.Add(quoteName, true);
                         ++colidx;
                     }
                     tbiindex++;
@@ -609,16 +603,11 @@ namespace FreeSql.Internal.CommonProvider
                     { //普通字段
                         if (index > 0) field.Append(", ");
                         var quoteName = _commonUtils.QuoteSqlName(col.Attribute.Name);
-                        var columnSql = $"{tb.Alias}.{quoteName}";
-                        var rereadSql = isRereadSql ? _commonUtils.RereadColumn(col, columnSql) : columnSql;
-                        field.Append(rereadSql);
+                        if (isRereadSql) field.Append(_commonUtils.RereadColumn(col, $"{tb.Alias}.{quoteName}"));
+                        else field.Append($"{tb.Alias}.{quoteName}");
                         ++index;
                         if (dicfield.ContainsKey(quoteName)) field.Append(_commonUtils.FieldAsAlias($"as{index}"));
-                        else
-                        {
-                            dicfield.Add(quoteName, true);
-                            if (rereadSql != columnSql) field.Append(_commonUtils.FieldAsAlias(quoteName));
-                        }
+                        else dicfield.Add(quoteName, true);
                     }
                     else
                     {
@@ -638,17 +627,12 @@ namespace FreeSql.Internal.CommonProvider
                         {
                             if (index > 0) field.Append(", ");
                             var quoteName = _commonUtils.QuoteSqlName(col2.Attribute.Name);
-                            var columnSql = $"{tb2.Alias}.{quoteName}";
-                            var rereadSql = isRereadSql ? _commonUtils.RereadColumn(col2, columnSql) : columnSql;
-                            field.Append(rereadSql);
+                            if (isRereadSql) field.Append(_commonUtils.RereadColumn(col2, $"{tb2.Alias}.{quoteName}"));
+                            else field.Append($"{tb2.Alias}.{quoteName}");
                             ++index;
                             ++otherindex;
                             if (dicfield.ContainsKey(quoteName)) field.Append(_commonUtils.FieldAsAlias($"as{index}"));
-                            else
-                            {
-                                dicfield.Add(quoteName, true);
-                                if (rereadSql != columnSql) field.Append(_commonUtils.FieldAsAlias(quoteName));
-                            }
+                            else dicfield.Add(quoteName, true);
                         }
                     }
                     //只读到二级属性
@@ -815,7 +799,7 @@ namespace FreeSql.Internal.CommonProvider
         {
             var map = new ReadAnonymousTypeInfo();
             var field = new StringBuilder();
-            var index = CommonExpression.ReadAnonymousFieldAsCsNameGroupBy; //临时规则，不返回 as1
+            var index = -10000; //临时规则，不返回 as1
 
             _commonExpression.ReadAnonymousField(_tables, _tableRule, field, map, ref index, columns, null, _diymemexpWithTempQuery, _whereGlobalFilter, null, null, false); //不走 DTO 映射，不处理 IncludeMany
             var sql = field.ToString();
@@ -835,7 +819,7 @@ namespace FreeSql.Internal.CommonProvider
             _commonExpression.ExpressionJoinLambda(_tables, _tableRule, joinType, exp, _diymemexpWithTempQuery, _whereGlobalFilter);
             return this as TSelect;
         }
-        public TSelect InternalOrderBy(Expression column)
+        protected TSelect InternalOrderBy(Expression column)
         {
             if (column.NodeType == ExpressionType.Lambda) column = (column as LambdaExpression)?.Body;
             switch (column?.NodeType)
@@ -848,7 +832,7 @@ namespace FreeSql.Internal.CommonProvider
             }
             return this.OrderBy(_commonExpression.ExpressionSelectColumn_MemberAccess(_tables, _tableRule, null, SelectTableInfoType.From, column, true, _diymemexpWithTempQuery));
         }
-        public TSelect InternalOrderByDescending(Expression column)
+        protected TSelect InternalOrderByDescending(Expression column)
         {
             if (column.NodeType == ExpressionType.Lambda) column = (column as LambdaExpression)?.Body;
             switch (column?.NodeType)

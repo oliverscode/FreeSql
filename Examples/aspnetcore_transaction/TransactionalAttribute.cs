@@ -6,7 +6,7 @@ using Rougamo.Context;
 
 namespace FreeSql
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class TransactionalAttribute : Rougamo.MoAttribute
     {
         public Propagation Propagation { get; set; } = Propagation.Required;
