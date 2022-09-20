@@ -3,21 +3,22 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;netstandard2.0;net451;net45;net40</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>FreeSql;ncc;YeXiangQin</Authors>
+		<Authors>FreeSql;ncc;YeXiangQin,Oliver</Authors>
 		<Description>FreeSql is the ORM in .NetCore, .NetFramework, And Xamarin. It supports Mysql, Postgresql, SqlServer, Oracle, Sqlite, Firebird, Odbc, 达梦, 人大金仓, 神舟通用, 南大通用, 翰高, And Access</Description>
-		<PackageProjectUrl>https://github.com/2881099/FreeSql</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/2881099/FreeSql</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/oliverscode/FreeSql</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/oliverscode/FreeSql</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>FreeSql;ORM</PackageTags>
 		<PackageIcon>logo.png</PackageIcon>
-		<Title>$(AssemblyName)</Title>
+		<Title>Pingfan.FreeSql</Title>
 		<IsPackable>true</IsPackable>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
 		<DelaySign>false</DelaySign>
 		<Version>3.2.666</Version>
+		<PackageId>Pingfan.FreeSql</PackageId>
 	</PropertyGroup>
 
 	<ItemGroup>
