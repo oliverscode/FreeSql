@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;netstandard2.0;net451;net45;net40</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>FreeSql;ncc;YeXiangQin,Oliver</Authors>
 		<Description>FreeSql is the ORM in .NetCore, .NetFramework, And Xamarin. It supports Mysql, Postgresql, SqlServer, Oracle, Sqlite, Firebird, Odbc, 达梦, 人大金仓, 神舟通用, 南大通用, 翰高, And Access</Description>
@@ -19,6 +18,7 @@
 		<DelaySign>false</DelaySign>
 		<Version>3.2.666</Version>
 		<PackageId>Pingfan.FreeSql</PackageId>
+		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>
